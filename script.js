@@ -1,27 +1,73 @@
-$(".everest").click(function() {
-    showPicture("https://user-images.githubusercontent.com/14214/42292528-246b57fe-7fa1-11e8-83fb-3a0daa76d08e.png");
-    highlightMountains();
-});
+function checkIfBelongsToMandelbrotSet(x, y) {
+var realComponentOfResult = x;
+var imaginaryComponentOfResult = y;
 
-$(".k2").click(function() {
-    showPicture("https://user-images.githubusercontent.com/14214/42292614-ba367638-7fa1-11e8-8e94-97bc8b566232.png");
-    highlightMountains();
-});
+for(var i = 0; i < 100; i++) {
+    
+     var realComponentOfResult = x;
+    var imaginaryComponentOfResult = y;
+    var maxIterations = 100;
+    for(var i = 0; i < maxIterations; i++) {
+         var tempRealComponent = realComponentOfResult * realComponentOfResult
+                                 - imaginaryComponentOfResult * imaginaryComponentOfResult
+                                 + x;
+         var tempImaginaryComponent = 2 * realComponentOfResult * imaginaryComponentOfResult
+                                 + y;
+         realComponentOfResult = tempRealComponent;
+         imaginaryComponentOfResult = tempImaginaryComponent;
 
-$(".kangchenjunga").click(function() {
-    showPicture("https://user-images.githubusercontent.com/14214/42292634-e0fedbac-7fa1-11e8-9d56-6d12dcd7ab3c.png");
-    highlightMountains();
-});
+         // Return a number as a percentage
+         if(realComponentOfResult * imaginaryComponentOfResult > 5) {
+            return (i/maxIterations * 100);
+         }
+    }
+    return 0;   // Return zero if in set    
+    
+    
+     // Calculate the real and imaginary components of the result
+     // separately
+     var tempRealComponent = realComponentOfResult * realComponentOfResult
+                             - imaginaryComponentOfResult * imaginaryComponentOfResult
+                             + x;
 
-$(".Lhotse").click(function() {
-    showPicture("https://www.adventureconsultants.com/assets/Uploads/Himalaya/Nepal-Himalaya/Lhotse/Windy-EBC-SK.jpeg");
-    highlightMountains();
-});
+     var tempImaginaryComponent = 2 * realComponentOfResult * imaginaryComponentOfResult
+                             + y;
 
-function showPicture(picture) {
-    $(".mountain-picture").attr("src", picture);
+     realComponentOfResult = tempRealComponent;
+     imaginaryComponentOfResult = tempImaginaryComponent;
 }
 
-function highlightMountains() {
-    $(".picture-color").css("background-color", "lightblue");
+if (realComponentOfResult * imaginaryComponentOfResult < 5){
+    return true; // In the Mandelbrot set 
+    }
+
+return false; // Not in the set
 }
+
+(function() {
+   
+    var myCanvas = document.createElement("canvas");
+    myCanvas.width=600;
+    myCanvas.height=600;
+    document.body.appendChild(myCanvas);
+    var ctx = myCanvas.getContext("2d");
+
+    var magnificationFactor = 600;
+var panX = 0;
+var panY = 0;
+for(var x=0; x < myCanvas.width; x++) {
+   for(var y=0; y < myCanvas.height; y++) {
+       var belongsToSet = 
+            checkIfBelongsToMandelbrotSet(x/magnificationFactor - 2, 
+                                          y/magnificationFactor - 0.5);
+            if(belongsToSet === 0) {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(x,y, 1,1); // Draw a black pixel
+} else {
+    ctx.fillStyle = 'hsl(0, 100%, ' + belongsToSet + '%)';
+    ctx.fillRect(x,y, 1,1); // Draw a colorful pixel
+}}}
+     
+
+})();
+
